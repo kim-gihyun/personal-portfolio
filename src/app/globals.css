@@ -549,6 +549,9 @@ html.xcur-on .xcur > span { opacity: 1; }
 .intro-meta { display: flex; flex-direction: column; gap: 1.1rem; }
 .intro-meta > div { display: flex; flex-direction: column; gap: 0.2rem; }
 .intro-meta b { font-weight: 600; font-size: 1.02rem; }
+.intro-meta-row { display: flex; flex-wrap: wrap; gap: 1.1rem 2.6rem; align-items: baseline; margin-top: 1.6rem; }
+.intro-meta-row > div { display: flex; flex-direction: column; gap: 0.2rem; }
+.intro-meta-row b { font-family: var(--font-ui); font-weight: 500; font-size: 1rem; }
 @media (max-width: 860px) {
   .intro-grid { grid-template-columns: 1fr; }
   .intro-cols { grid-template-columns: 1fr; }
@@ -609,6 +612,8 @@ html.xcur-on .xcur > span { opacity: 1; }
   border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
 }
 .wp-canvas { position: absolute; inset: 0; }
+.wp-poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: clamp(1rem, 3vw, 2.6rem); transition: transform 0.6s var(--ease-out-expo); }
+.wp-stage:hover .wp-poster { transform: scale(1.03); }
 .wp-stage-id { position: absolute; top: 1rem; left: 1rem; z-index: 2; }
 .wp-cards { display: flex; flex-direction: column; gap: 1.5rem; }
 .wp-rest { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
@@ -623,7 +628,11 @@ html.xcur-on .xcur > span { opacity: 1; }
   background: radial-gradient(110% 90% at 50% 20%, color-mix(in oklch, var(--accent-2) 12%, transparent), transparent 60%), var(--bg-2);
 }
 .wp-thumb-canvas { position: absolute; inset: 0; min-height: 0; }
+.wp-thumb-stage img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 0.9rem; }
 .model-viewer--preview { pointer-events: none; } /* clicks fall through to the card link */
+/* portfolio static CAD render (everything except the live robot) */
+.pf-static { display: grid; place-items: center; }
+.pf-static img { max-width: 100%; max-height: 100%; object-fit: contain; padding: clamp(1rem, 3vw, 2.2rem); }
 .wp-thumb-meta { display: flex; flex-direction: column; gap: 0.2rem; }
 .wp-thumb-meta b { font-weight: 700; letter-spacing: -0.01em; }
 .wp-thumb-tag { font-size: 0.82rem; color: var(--muted); }

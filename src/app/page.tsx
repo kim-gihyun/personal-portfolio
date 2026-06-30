@@ -35,25 +35,22 @@ export default function Home() {
               className="intro-statement"
               text="The work I like best is where mechanical design, electronics, and software meet."
             />
-            <Reveal className="intro-cols" stagger={0.12}>
-              <p className="measure">{profile.blurb}</p>
-              <div className="intro-meta">
-                <div>
-                  <span className="readout">Based</span>
-                  <b>{profile.location}</b>
-                </div>
-                <div>
-                  <span className="readout">Reading</span>
-                  <b>Linear algebra · complex analysis</b>
-                </div>
-                <div>
-                  <span className="readout">Building</span>
-                  <b>TENG glove · Robocon</b>
-                </div>
-                <Link href="/about" className="ulink" data-cursor="link">
-                  Read the long version →
-                </Link>
+            <Reveal className="intro-meta-row" stagger={0.1}>
+              <div>
+                <span className="readout">Based</span>
+                <b>{profile.location}</b>
               </div>
+              <div>
+                <span className="readout">Reading</span>
+                <b>Linear algebra · complex analysis</b>
+              </div>
+              <div>
+                <span className="readout">Building</span>
+                <b>TENG glove · Robocon</b>
+              </div>
+              <Link href="/about" className="ulink" data-cursor="link">
+                More about me →
+              </Link>
             </Reveal>
           </div>
         </div>

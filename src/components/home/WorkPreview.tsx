@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ModelViewer } from "@/components/three/ModelViewer";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { projects } from "@/lib/data/projects";
 
+// Static posters only — the single live 3D model on the home page is the
+// Robocon robot in the hero. Cards deep-link into the Work page.
 export function WorkPreview() {
   const hero = projects.find((p) => p.id === "robocon-robot")!;
   const rest = projects.filter((p) => ["trolley", "solar-tracker", "tensile-tester"].includes(p.id));
@@ -12,10 +13,11 @@ export function WorkPreview() {
   return (
     <div className="work-preview">
       <div className="wp-showpiece">
-        <div className="wp-stage">
-          <ModelViewer src={hero.model} orient={hero.orient} className="wp-canvas" />
+        <Link href={`/portfolio#${hero.id}`} className="wp-stage" data-cursor="view" data-cursor-label="open">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="wp-poster" src={hero.poster} alt={`${hero.title} — CAD render`} />
           <span className="wp-stage-id readout">{hero.num} · {hero.tag}</span>
-        </div>
+        </Link>
 
         <aside className="wp-cards">
           <article className="spec-card spec-card--lift">
@@ -46,7 +48,8 @@ export function WorkPreview() {
         {rest.map((p) => (
           <Link key={p.id} href={`/portfolio#${p.id}`} className="wp-thumb" data-cursor="link">
             <span className="wp-thumb-stage">
-              <ModelViewer src={p.model} orient={p.orient} preview hint={false} className="wp-thumb-canvas" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={p.poster} alt={`${p.title} — CAD render`} loading="lazy" />
             </span>
             <span className="wp-thumb-meta">
               <span className="readout">{p.num}</span>

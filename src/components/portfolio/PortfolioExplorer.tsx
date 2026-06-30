@@ -134,24 +134,6 @@ export function PortfolioExplorer() {
 
               <p className="pf-lead">{active.blurb}</p>
 
-              <div className="pf-body">
-                {active.body.map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </div>
-
-              <div className="pf-context">
-                <span className="readout">Engineering context</span>
-                <div className="pf-context-grid">
-                  {active.context.map((c) => (
-                    <div key={c.title} className="pf-context-card">
-                      <h4>{c.title}</h4>
-                      <p>{c.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               <div className="pf-revs">
                 <span className="readout">Revision history</span>
                 <ol>

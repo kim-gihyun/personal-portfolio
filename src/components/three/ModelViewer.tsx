@@ -159,13 +159,13 @@ export function ModelViewer({
       {mounted && (
         <Canvas
           shadows={interactive}
-          dpr={preview ? [1, 1.5] : [1, 2]}
+          dpr={preview ? [1, 1.25] : [1, 1.5]}
           camera={{ position: [0, 0.6, 5.2], fov: 38 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
           onPointerDown={() => interactive && setInteracted(true)}
         >
           <ambientLight intensity={0.55} />
-          <directionalLight position={[4, 6, 5]} intensity={1.6} castShadow={interactive} shadow-mapSize={[1024, 1024]} />
+          <directionalLight position={[4, 6, 5]} intensity={1.6} castShadow={interactive} shadow-mapSize={[512, 512]} />
           <directionalLight position={[-5, 2, -4]} intensity={0.6} color="#6fa8e0" />
           <Suspense fallback={<Loader />}>
             <Model src={src} orient={orient} tint={tint} />

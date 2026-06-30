@@ -65,37 +65,6 @@ export default function AboutPage() {
         </Reveal>
       </section>
 
-      {/* applied maths <-> materials (light draft — edit in your voice) */}
-      <section className="shell about-duo">
-        <Reveal className="about-duo-head">
-          <h2>Two languages, one bench</h2>
-          <p className="measure">
-            I keep one foot in the rigorous logic of applied mathematics and the other in the physical reality
-            of advanced materials — the work I like best lives where the two meet.
-          </p>
-        </Reveal>
-        <div className="about-duo-grid">
-          <Reveal className="about-duo-card about-duo-card--math">
-            <span className="readout">A — the clean side</span>
-            <h3>Applied mathematics</h3>
-            <p>
-              Linear algebra, complex analysis, the kind of problem that is provable and behaves exactly as you
-              specify it.
-            </p>
-            <code className="about-eq">linear algebra · complex analysis</code>
-          </Reveal>
-          <Reveal className="about-duo-card about-duo-card--matter" delay={0.1}>
-            <span className="readout">B — the physical side</span>
-            <h3>Material engineering</h3>
-            <p>
-              Real materials that warp, drift, and only behave once the part is in your hand — where the clean
-              answer meets friction.
-            </p>
-            <code className="about-eq">nominal − as-built ≠ 0</code>
-          </Reveal>
-        </div>
-      </section>
-
       {/* now */}
       <section className="shell about-now">
         <Reveal className="about-facts" stagger={0.08}>

@@ -121,7 +121,7 @@ export const projects: Project[] = [
     status: "Built & in use",
     categories: ["cad", "robotics"],
     model: "/assets/trolley.glb",
-    orient: { rx: -90 },
+    orient: { rx: 90 },
     poster: "/assets/trolley.png",
     blurb:
       "A parametric trolley that moves competition robots between workshop and venue, with 3D-printed corner mounts that lock each robot in place.",
