@@ -118,9 +118,10 @@ export function HomeHero() {
               orient={{ rx: 0, ry: 210, zoom: 1.5 }}
               className="hero-canvas"
               label="Robocon competition robot"
+              hint={false}
             />
           </div>
-          <span className="hero-stage-cap readout">Fig. 01 — Robocon robot · drag to rotate</span>
+          <span className="hero-stage-cap readout">Fig. 01 — Robocon robot · drag &amp; scroll</span>
         </div>
       </div>
 

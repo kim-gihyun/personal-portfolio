@@ -23,7 +23,7 @@ export function WorkPreview() {
             <h3>{hero.title}</h3>
             <p>{hero.blurb}</p>
             <Magnetic strength={0.3}>
-              <Link href="/portfolio" className="ulink wp-open" data-cursor="link">
+              <Link href={`/portfolio#${hero.id}`} className="ulink wp-open" data-cursor="link">
                 Open full sheet →
               </Link>
             </Magnetic>
@@ -44,14 +44,15 @@ export function WorkPreview() {
 
       <div className="wp-rest">
         {rest.map((p) => (
-          <Link key={p.id} href="/portfolio" className="wp-thumb" data-cursor="link">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={p.poster} alt={p.title} loading="lazy" />
-            <div className="wp-thumb-meta">
+          <Link key={p.id} href={`/portfolio#${p.id}`} className="wp-thumb" data-cursor="link">
+            <span className="wp-thumb-stage">
+              <ModelViewer src={p.model} orient={p.orient} preview hint={false} className="wp-thumb-canvas" />
+            </span>
+            <span className="wp-thumb-meta">
               <span className="readout">{p.num}</span>
               <b>{p.title}</b>
               <span className="wp-thumb-tag">{p.tag}</span>
-            </div>
+            </span>
           </Link>
         ))}
       </div>

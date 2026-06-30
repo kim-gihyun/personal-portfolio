@@ -12,6 +12,9 @@ type Orient = { rx?: number; ry?: number; zoom?: number };
 
 const deg = (d = 0) => (d * Math.PI) / 180;
 
+// cool brushed-steel tint so the CAD reads as a rendered part, not white plastic
+const TINT = "#7c8aa6";
+
 /** Normalize any object to ~2.2 units across its largest axis, centered. */
 function useNormalizedScale(obj: THREE.Object3D | null) {
   return useMemo(() => {
@@ -23,7 +26,7 @@ function useNormalizedScale(obj: THREE.Object3D | null) {
   }, [obj]);
 }
 
-function GLBModel({ src, orient }: { src: string; orient?: Orient }) {
+function GLBModel({ src, orient, tint }: { src: string; orient?: Orient; tint: string }) {
   const { scene } = useGLTF(src);
   const cloned = useMemo(() => {
     const c = scene.clone(true);
@@ -32,20 +35,30 @@ function GLBModel({ src, orient }: { src: string; orient?: Orient }) {
       if (m.isMesh) {
         m.castShadow = true;
         m.receiveShadow = true;
-        const mat = m.material as THREE.MeshStandardMaterial;
-        if (mat && "metalness" in mat) {
+        // clone the material so we recolour this instance without touching the cache
+        const src = m.material as THREE.MeshStandardMaterial;
+        const mat = src?.clone?.() as THREE.MeshStandardMaterial | undefined;
+        if (mat) {
+          if ("color" in mat) mat.color.set(tint);
+          if ("metalness" in mat) mat.metalness = 0.55;
+          if ("roughness" in mat) mat.roughness = 0.5;
           mat.envMapIntensity = 1.1;
+          mat.map = null; // drop any baked white texture
+          m.material = mat;
         }
       }
     });
     return c;
-  }, [scene]);
-  // dispose the geometries we cloned (materials/textures are shared with the cache)
+  }, [scene, tint]);
+  // dispose the geometries + materials we cloned (source stays in the cache)
   useEffect(
     () => () => {
       cloned.traverse((o) => {
         const m = o as THREE.Mesh;
-        if (m.isMesh) m.geometry?.dispose();
+        if (m.isMesh) {
+          m.geometry?.dispose();
+          (m.material as THREE.Material)?.dispose?.();
+        }
       });
     },
     [cloned],
@@ -58,7 +71,7 @@ function GLBModel({ src, orient }: { src: string; orient?: Orient }) {
   );
 }
 
-function STLModel({ src, orient }: { src: string; orient?: Orient }) {
+function STLModel({ src, orient, tint }: { src: string; orient?: Orient; tint: string }) {
   const geom = useLoader(STLLoader, src);
   const prepared = useMemo(() => {
     const g = geom.clone();
@@ -72,16 +85,18 @@ function STLModel({ src, orient }: { src: string; orient?: Orient }) {
   return (
     <group rotation={[deg(orient?.rx), deg(orient?.ry), 0]} scale={scale}>
       <mesh geometry={prepared} castShadow receiveShadow>
-        <meshStandardMaterial color="#c9ccc6" metalness={0.15} roughness={0.55} />
+        <meshStandardMaterial color={tint} metalness={0.5} roughness={0.5} />
       </mesh>
     </group>
   );
 }
 
-function Model({ src, orient }: { src: string; orient?: Orient }) {
+function Model({ src, orient, tint }: { src: string; orient?: Orient; tint: string }) {
   const isStl = src.toLowerCase().endsWith(".stl");
   return (
-    <Center>{isStl ? <STLModel src={src} orient={orient} /> : <GLBModel src={src} orient={orient} />}</Center>
+    <Center>
+      {isStl ? <STLModel src={src} orient={orient} tint={tint} /> : <GLBModel src={src} orient={orient} tint={tint} />}
+    </Center>
   );
 }
 
@@ -102,6 +117,9 @@ export function ModelViewer({
   className,
   contact = true,
   label,
+  hint = true,
+  tint = TINT,
+  preview = false,
 }: {
   src: string;
   orient?: Orient;
@@ -109,6 +127,10 @@ export function ModelViewer({
   className?: string;
   contact?: boolean;
   label?: string;
+  hint?: boolean;
+  tint?: string;
+  /** spinning, non-interactive preview that lets clicks pass through to a parent link */
+  preview?: boolean;
 }) {
   const [mounted, setMounted] = useState(false);
   const [interacted, setInteracted] = useState(false);
@@ -120,54 +142,59 @@ export function ModelViewer({
     setReduced(prefersReducedMotion());
   }, []);
 
+  const interactive = !preview;
+
   return (
     <div
       ref={wrap}
-      className={`model-viewer ${className ?? ""}`}
-      data-cursor="drag"
-      data-cursor-label="drag · scroll"
-      data-lenis-prevent
+      className={`model-viewer ${preview ? "model-viewer--preview" : ""} ${className ?? ""}`}
+      {...(interactive ? { "data-cursor": "drag", "data-cursor-label": "drag · scroll", "data-lenis-prevent": "" } : {})}
       role="img"
       aria-label={
         label
-          ? `Interactive 3D model of ${label}. Drag to rotate, scroll to zoom.`
-          : "Interactive 3D model. Drag to rotate, scroll to zoom."
+          ? `${interactive ? "Interactive " : ""}3D model of ${label}.${interactive ? " Drag to rotate, scroll to zoom." : ""}`
+          : "3D model."
       }
     >
       {mounted && (
         <Canvas
-          shadows
-          dpr={[1, 2]}
+          shadows={interactive}
+          dpr={preview ? [1, 1.5] : [1, 2]}
           camera={{ position: [0, 0.6, 5.2], fov: 38 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-          onPointerDown={() => setInteracted(true)}
+          onPointerDown={() => interactive && setInteracted(true)}
         >
           <ambientLight intensity={0.55} />
-          <directionalLight position={[4, 6, 5]} intensity={1.6} castShadow shadow-mapSize={[1024, 1024]} />
-          <directionalLight position={[-5, 2, -4]} intensity={0.5} color="#ff7a45" />
+          <directionalLight position={[4, 6, 5]} intensity={1.6} castShadow={interactive} shadow-mapSize={[1024, 1024]} />
+          <directionalLight position={[-5, 2, -4]} intensity={0.6} color="#6fa8e0" />
           <Suspense fallback={<Loader />}>
-            <Model src={src} orient={orient} />
+            <Model src={src} orient={orient} tint={tint} />
           </Suspense>
           <Suspense fallback={null}>
             <Environment preset="city" />
           </Suspense>
-          {contact && <ContactShadows position={[0, -1.35, 0]} opacity={0.45} scale={9} blur={2.6} far={3} />}
+          {contact && interactive && (
+            <ContactShadows position={[0, -1.35, 0]} opacity={0.45} scale={9} blur={2.6} far={3} />
+          )}
           <OrbitControls
             makeDefault
             enablePan={false}
-            enableZoom
+            enableRotate={interactive}
+            enableZoom={interactive}
             minDistance={3}
             maxDistance={9}
-            autoRotate={autoRotate && !interacted && !reduced}
-            autoRotateSpeed={0.9}
+            autoRotate={(preview ? true : autoRotate) && !interacted && !reduced}
+            autoRotateSpeed={preview ? 1.6 : 0.9}
             enableDamping
             dampingFactor={0.08}
           />
         </Canvas>
       )}
-      <span className="model-hint readout" aria-hidden>
-        drag to rotate · scroll to zoom
-      </span>
+      {hint && interactive && (
+        <span className="model-hint readout" aria-hidden>
+          drag to rotate · scroll to zoom
+        </span>
+      )}
     </div>
   );
 }

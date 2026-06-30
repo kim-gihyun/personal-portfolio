@@ -106,7 +106,7 @@ export function JourneyMap() {
           <g className="map-craft" aria-hidden>
             <path className="craft-trail" d="M-14 0 H-7" />
             <path d="M7 0 L-5 4.2 L-2.2 0 L-5 -4.2 Z" />
-            <animateMotion dur="20s" repeatCount="indefinite" rotate="auto" path={ROUTE} />
+            <animateMotion dur="12s" repeatCount="indefinite" rotate="auto" path={ROUTE} />
           </g>
 
           {POINTS.map((pt) => {

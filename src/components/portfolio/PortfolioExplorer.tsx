@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ActiveViewer } from "./ActiveViewer";
 import { Gallery } from "@/components/ui/Gallery";
@@ -9,6 +9,24 @@ import { projects, projectFilters } from "@/lib/data/projects";
 export function PortfolioExplorer() {
   const [filter, setFilter] = useState("all");
   const [activeId, setActiveId] = useState(projects[0].id);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // deep-link: /portfolio#<project-id> opens straight to that sheet
+  useEffect(() => {
+    const fromHash = () => {
+      const id = decodeURIComponent(window.location.hash.replace("#", ""));
+      if (id && projects.some((p) => p.id === id)) {
+        setActiveId(id);
+        setFilter("all");
+        requestAnimationFrame(() =>
+          rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+        );
+      }
+    };
+    fromHash();
+    window.addEventListener("hashchange", fromHash);
+    return () => window.removeEventListener("hashchange", fromHash);
+  }, []);
 
   const filtered = useMemo(
     () => (filter === "all" ? projects : projects.filter((p) => p.categories.includes(filter))),
@@ -22,7 +40,7 @@ export function PortfolioExplorer() {
   }, [filtered, activeId]);
 
   return (
-    <div className="pf">
+    <div className="pf" ref={rootRef}>
       {/* filters */}
       <div className="pf-filters" role="group" aria-label="Filter work">
         {projectFilters.map((f) => {

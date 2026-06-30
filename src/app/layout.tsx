@@ -69,7 +69,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <Preloader name={profile.name} />
         <Cursor />
         <SmoothScroll>
