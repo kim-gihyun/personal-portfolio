@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="GK technical mark">
+  <line x1="150" y1="40" x2="150" y2="62" stroke="#3da5f4" stroke-width="3"/>
+  <line x1="139" y1="51" x2="161" y2="51" stroke="#3da5f4" stroke-width="3"/>
+  <text x="96" y="100" font-family="Arial, Helvetica, sans-serif" font-size="92" font-weight="700"
+        fill="#00356b" text-anchor="middle" dominant-baseline="central" letter-spacing="-7">GK</text>
+  <rect x="52" y="150" width="96" height="4" rx="2" fill="#00356b"/>
+  <rect x="52" y="150" width="30" height="4" rx="2" fill="#3da5f4"/>
+</svg>
