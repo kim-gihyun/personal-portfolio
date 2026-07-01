@@ -60,6 +60,11 @@ export function Footer() {
               <div><i>Rev</i><b>D</b></div>
               <div><i>Date</i><b>JUN 2026</b></div>
             </div>
+            <div className="footer-sign">
+              <span className="readout">Signed</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="footer-sig" src="/assets/signature.jpeg" alt="Gihyun Kim signature" />
+            </div>
           </div>
         </div>
 

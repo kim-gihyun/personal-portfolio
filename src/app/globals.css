@@ -242,8 +242,38 @@ a { color: inherit; text-decoration: none; }
 ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 
 /* ============================================================================
-   FIELD-SCANNER CURSOR (interactive blueprint dot-aura + crosshair reticle)
+   DRAFTING CURSOR (crosshair guides · coordinates · grid-snap · bracket lock)
    ========================================================================== */
+.xcur span, .xcur i { position: fixed; left: 0; top: 0; pointer-events: none; }
+.xcur > span { z-index: var(--z-cursor); opacity: 0; transition: opacity 0.25s ease; }
+html.xcur-on .xcur > span { opacity: 1; }
+.xc-h { width: 100vw; height: 1px; background: color-mix(in oklch, var(--accent) 34%, transparent); }
+.xc-v { height: 100vh; width: 1px; background: color-mix(in oklch, var(--accent) 34%, transparent); }
+.xc-dot { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: var(--accent-ink); }
+.xc-snap {
+  width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px;
+  background:
+    linear-gradient(var(--accent) 0 0) center / 100% 1.5px no-repeat,
+    linear-gradient(90deg, var(--accent) 0 0) center / 1.5px 100% no-repeat;
+  transition: transform 0.1s ease-out, opacity 0.25s ease;
+}
+.xc-read {
+  font-family: var(--font-mono); font-size: 0.56rem; line-height: 1; letter-spacing: 0.1em; white-space: pre;
+  color: var(--accent-ink); background: color-mix(in oklch, var(--bg) 85%, transparent);
+  border: 1px solid var(--line); padding: 3px 6px;
+}
+.xc-box { opacity: 0 !important; transition: transform 0.16s cubic-bezier(0.2,0.8,0.2,1), width 0.16s cubic-bezier(0.2,0.8,0.2,1), height 0.16s cubic-bezier(0.2,0.8,0.2,1), opacity 0.15s ease; }
+.xcur.lock .xc-box { opacity: 1 !important; }
+.xc-box i { position: absolute; width: 9px; height: 9px; border: 1.5px solid var(--accent-ink); }
+.xc-box .b1 { left: 0; top: 0; border-right: 0; border-bottom: 0; }
+.xc-box .b2 { right: 0; top: 0; left: auto; border-left: 0; border-bottom: 0; }
+.xc-box .b3 { left: 0; bottom: 0; top: auto; border-right: 0; border-top: 0; }
+.xc-box .b4 { right: 0; bottom: 0; left: auto; top: auto; border-left: 0; border-top: 0; }
+.xcur.lock .xc-h, .xcur.lock .xc-v { opacity: 0.14; }
+.xcur.lock .xc-snap, .xcur.lock .xc-read { opacity: 0; }
+.xcur.quiet .xc-read, .xcur.quiet .xc-snap { opacity: 0 !important; }
+
+/* blueprint dot-aura revealed around the cursor — ambient background (z-index:-1) */
 .cursor-field {
   position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none;
   width: 440px; height: 440px; margin: -220px 0 0 -220px;
@@ -255,17 +285,7 @@ a { color: inherit; text-decoration: none; }
 }
 html.xcur-on .cursor-field { opacity: 0.9; }
 
-.cursor-mark { position: fixed; top: 0; left: 0; z-index: var(--z-cursor); pointer-events: none; opacity: 0; transition: opacity 0.3s ease; will-change: transform; }
-html.xcur-on .cursor-mark { opacity: 1; }
-.cm-h, .cm-v { position: absolute; background: var(--accent-ink); transition: width 0.25s var(--ease-out-expo), height 0.25s var(--ease-out-expo), left 0.25s var(--ease-out-expo), top 0.25s var(--ease-out-expo); }
-.cm-h { width: 17px; height: 1.5px; left: -8.5px; top: -0.75px; }
-.cm-v { width: 1.5px; height: 17px; left: -0.75px; top: -8.5px; }
-.cursor-mark.is-link .cm-h { width: 30px; left: -15px; }
-.cursor-mark.is-link .cm-v { height: 30px; top: -15px; }
-
-@media (pointer: coarse), (prefers-reduced-motion: reduce) {
-  .cursor-field, .cursor-mark { display: none; }
-}
+@media (pointer: coarse), (prefers-reduced-motion: reduce) { .xcur, .cursor-field { display: none; } }
 
 /* ============================================================================
    TEXT REVEAL (masked words)
@@ -418,6 +438,9 @@ html.xcur-on .cursor-mark { opacity: 1; }
 .footer-tb div { display: flex; flex-direction: column; }
 .footer-tb i { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .footer-tb b { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
+.footer-sign { margin-top: 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.footer-sig { width: 165px; height: auto; margin-left: -6px; mix-blend-mode: multiply; opacity: 0.92; }
+[data-theme="dark"] .footer-sig { filter: invert(1); mix-blend-mode: screen; opacity: 0.85; }
 .footer-base {
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem;
   margin-top: 1.5rem;
@@ -553,6 +576,72 @@ html.home-locked .footer { display: none; }
 .work-card-meta b { font-family: var(--font-display); font-weight: 600; font-size: 1.15rem; letter-spacing: -0.01em; transition: color 0.3s; }
 .work-card:hover .work-card-meta b { color: var(--accent-ink); }
 .work-card-tag { font-family: var(--font-ui); font-size: 0.85rem; color: var(--muted); }
+
+/* ============================================================================
+   MINDMAP — radial constellation (home)
+   ========================================================================== */
+.mm { width: 100%; }
+.mm-stage {
+  position: relative; width: 100%; max-width: 960px; margin-inline: auto;
+  aspect-ratio: 1000 / 620; overflow: hidden;
+}
+.mm-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* linework + nodes (currentColor = each branch hue, set per <g>) */
+.mm-guide { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 7; }
+.mm-guide--in { opacity: 0.55; }
+.mm-spoke { fill: none; stroke: currentColor; stroke-width: 1.6; opacity: 0.5; }
+.mm-twig { stroke: currentColor; stroke-width: 1; opacity: 0.4; stroke-linecap: round; }
+.mm-dot { fill: currentColor; opacity: 0.92; }
+.mm-hub { fill: color-mix(in oklch, var(--bg) 78%, currentColor); stroke: currentColor; stroke-width: 1.8; }
+.mm-core-dot { fill: var(--accent-2); opacity: 0.85; }
+.mm-center-dot { fill: var(--accent-ink); }
+
+/* centre label — wrapper centres, inner box scales/fades in */
+.mm-center { position: absolute; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; }
+.mm-center-box {
+  display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
+  padding: 0.5rem 1rem; border-radius: 999px; text-align: center;
+  background: color-mix(in oklch, var(--bg) 80%, transparent); backdrop-filter: blur(3px);
+  box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--accent) 55%, transparent);
+}
+.mm-center-box b { font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; letter-spacing: -0.01em; color: var(--accent-ink); }
+
+/* clickable branch labels — wrapper centres, inner card animates */
+.mm-node { position: absolute; transform: translate(-50%, -50%); z-index: 2; }
+.mm-node-card {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.45rem 0.7rem; border-radius: 8px; white-space: nowrap;
+  background: color-mix(in oklch, var(--bg) 86%, transparent); backdrop-filter: blur(4px);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: box-shadow 0.3s var(--ease-out-quart), background 0.3s;
+}
+.mm-node-dot {
+  width: 9px; height: 9px; border-radius: 50%; flex: none;
+  background: var(--c, var(--accent));
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--c, var(--accent)) 20%, transparent);
+}
+.mm-node-text { display: flex; flex-direction: column; gap: 0.05rem; }
+.mm-node-label { font-family: var(--font-display); font-weight: 600; font-size: 0.98rem; letter-spacing: -0.01em; color: var(--ink); transition: color 0.3s; }
+.mm-node-cat { color: var(--muted); }
+.mm-node-card:hover { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--c, var(--accent)) 65%, transparent); background: color-mix(in oklch, var(--bg) 92%, var(--c, var(--accent))); }
+.mm-node-card:hover .mm-node-label { color: var(--accent-ink); }
+
+/* mobile fallback — same links as a list */
+.mm-list { display: none; }
+@media (max-width: 860px) {
+  .mm-stage { display: none; }
+  .mm-list { display: grid; gap: 0.55rem; }
+  .mm-list-link {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 0.85rem 1rem; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--line);
+    transition: box-shadow 0.3s, background 0.3s;
+  }
+  .mm-list-link b { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; flex: none; }
+  .mm-list-link .mm-node-cat { flex: 1; }
+  .mm-list-link span[aria-hidden] { color: var(--c, var(--accent)); margin-left: auto; font-size: 1.1rem; }
+  .mm-list-link:hover { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--c, var(--accent)) 60%, transparent); background: var(--bg-2); }
+}
 
 /* faint "GK" watermark behind every page (slides to centre on the home) */
 .gk-backdrop {

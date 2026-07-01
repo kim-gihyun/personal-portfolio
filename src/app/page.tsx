@@ -1,23 +1,23 @@
 import Link from "next/link";
 import { HomeHero } from "@/components/home/HomeHero";
-import { WorkPreview } from "@/components/home/WorkPreview";
-import { Reveal } from "@/components/ui/Reveal";
+import { Mindmap } from "@/components/home/Mindmap";
 
 export default function Home() {
   return (
     <>
       <HomeHero />
 
-      <section className="section shell" id="work">
+      <section className="section shell" id="map">
         <div className="section-head">
-          <h2 className="section-title">Selected work</h2>
+          <div className="section-head-lead">
+            <span className="readout">Assembly diagram</span>
+            <h2 className="section-title">How it all connects</h2>
+          </div>
           <Link href="/portfolio" className="ulink section-link" data-cursor="link">
-            All six builds →
+            Straight to the work →
           </Link>
         </div>
-        <Reveal>
-          <WorkPreview />
-        </Reveal>
+        <Mindmap />
       </section>
     </>
   );
