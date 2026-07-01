@@ -30,7 +30,12 @@ export function Cursor() {
 
     let mx = -300;
     let my = -300;
+    let ax = -300; // aura position — lerps behind the cursor for a live trail
+    let ay = -300;
+    let cs = 1;    // aura scale — grows over interactive targets
+    let hot = false;
     let ticking = false;
+    let auraRAF = 0;
     let boxEl: Element | null = null;
 
     const paint = () => {
@@ -38,7 +43,6 @@ export function Cursor() {
       hRef.current!.style.transform = `translateY(${my}px)`;
       vRef.current!.style.transform = `translateX(${mx}px)`;
       dotRef.current!.style.transform = `translate(${mx}px,${my}px)`;
-      fieldRef.current!.style.transform = `translate(${mx}px,${my}px)`;
       const gx = Math.round((mx + 1) / GRID) * GRID - 1;
       const gy = Math.round((my + 1) / GRID) * GRID - 1;
       snapRef.current!.style.transform = `translate(${gx}px,${gy}px)`;
@@ -61,20 +65,40 @@ export function Cursor() {
       }
     };
 
+    // soft trailing dot-aura: eases toward the cursor and eases its scale, then
+    // parks itself once caught up (no rAF while idle)
+    const auraTick = () => {
+      const target = hot ? 1.24 : 1;
+      ax += (mx - ax) * 0.24;
+      ay += (my - ay) * 0.24;
+      cs += (target - cs) * 0.2;
+      fieldRef.current!.style.transform = `translate(${ax}px,${ay}px) scale(${cs.toFixed(3)})`;
+      const settled =
+        Math.abs(mx - ax) < 0.4 && Math.abs(my - ay) < 0.4 && Math.abs(target - cs) < 0.004;
+      auraRAF = settled ? 0 : requestAnimationFrame(auraTick);
+    };
+    const kickAura = () => {
+      if (!auraRAF) auraRAF = requestAnimationFrame(auraTick);
+    };
+
     const onMove = (e: MouseEvent) => {
       mx = e.clientX;
       my = e.clientY;
       root.classList.add("xcur-on");
       queue();
+      kickAura();
     };
     const onLeave = () => root.classList.remove("xcur-on");
     const onOver = (e: Event) => {
       const el = e.target as HTMLElement;
       const t = el.closest?.(LOCK_SEL) ?? null;
       boxEl = t;
+      hot = !!t;
       xcRef.current!.classList.toggle("lock", !!t);
       xcRef.current!.classList.toggle("quiet", !!el.closest?.(CONTENT_SEL));
+      fieldRef.current!.classList.toggle("hot", !!t);
       queue();
+      kickAura();
     };
     const onScroll = () => {
       if (boxEl) queue();
@@ -87,6 +111,7 @@ export function Cursor() {
     window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
+      cancelAnimationFrame(auraRAF);
       root.classList.remove("has-xcur", "xcur-on");
       document.removeEventListener("mousemove", onMove);
       document.documentElement.removeEventListener("mouseleave", onLeave);

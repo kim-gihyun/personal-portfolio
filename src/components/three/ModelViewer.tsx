@@ -26,10 +26,10 @@ type Orient = { rx?: number; ry?: number; zoom?: number };
 
 const deg = (d = 0) => (d * Math.PI) / 180;
 
-// brushed-steel tint so the CAD reads as a rendered part. Two tones so it sits
-// well on both backgrounds: lighter steel on navy (dark), deeper slate on paper (light).
+// tint so the CAD reads as a rendered part. Two tones so it sits well on both
+// backgrounds: lighter steel on navy (dark), sky blue on paper (light).
 const TINT_DARK = "#7c8aa6";
-const TINT_LIGHT = "#5c6879";
+const TINT_LIGHT = "#5b9bd5";
 
 /** Normalize any object to ~2.2 units across its largest axis, centered. */
 function useNormalizedScale(obj: THREE.Object3D | null) {

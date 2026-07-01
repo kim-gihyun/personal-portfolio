@@ -276,14 +276,19 @@ html.xcur-on .xcur > span { opacity: 1; }
 /* blueprint dot-aura revealed around the cursor — ambient background (z-index:-1) */
 .cursor-field {
   position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none;
-  width: 440px; height: 440px; margin: -220px 0 0 -220px;
-  opacity: 0; transition: opacity 0.5s ease; will-change: transform;
+  width: 560px; height: 560px; margin: -280px 0 0 -280px;
+  opacity: 0; transition: opacity 0.22s ease; will-change: transform;
   background-image: radial-gradient(color-mix(in oklch, var(--accent) 62%, transparent) 1.3px, transparent 1.4px);
   background-size: 26px 26px;
-  -webkit-mask: radial-gradient(circle 200px at center, #000 0%, rgba(0,0,0,0.35) 46%, transparent 72%);
-          mask: radial-gradient(circle 200px at center, #000 0%, rgba(0,0,0,0.35) 46%, transparent 72%);
+  -webkit-mask: radial-gradient(circle 260px at center, #000 0%, rgba(0,0,0,0.35) 46%, transparent 72%);
+          mask: radial-gradient(circle 260px at center, #000 0%, rgba(0,0,0,0.35) 46%, transparent 72%);
 }
 html.xcur-on .cursor-field { opacity: 0.9; }
+/* over interactive targets the aura brightens (JS also eases up its scale) */
+.cursor-field.hot {
+  background-image: radial-gradient(color-mix(in oklch, var(--accent) 80%, transparent) 1.45px, transparent 1.55px);
+}
+html.xcur-on .cursor-field.hot { opacity: 1; }
 
 @media (pointer: coarse), (prefers-reduced-motion: reduce) { .xcur, .cursor-field { display: none; } }
 
