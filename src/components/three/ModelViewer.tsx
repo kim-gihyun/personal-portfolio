@@ -1,12 +1,25 @@
 "use client";
 
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Environment, ContactShadows, Center, Html, useGLTF } from "@react-three/drei";
-import { useLoader } from "@react-three/fiber";
+import { Canvas, useLoader, useThree } from "@react-three/fiber";
+import { OrbitControls, Center, Html, useGLTF } from "@react-three/drei";
 import { STLLoader } from "three-stdlib";
 import * as THREE from "three";
-import { prefersReducedMotion } from "@/lib/theme";
+
+// Renders a burst of frames when the model (re)loads, then goes idle. With
+// frameloop="demand" this keeps GPU at ~0 unless the user is dragging.
+function LoadBurst() {
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    let n = 0;
+    let id = requestAnimationFrame(function tick() {
+      invalidate();
+      if (++n < 40) id = requestAnimationFrame(tick);
+    });
+    return () => cancelAnimationFrame(id);
+  }, [invalidate]);
+  return null;
+}
 
 type Orient = { rx?: number; ry?: number; zoom?: number };
 
@@ -113,9 +126,7 @@ function Loader() {
 export function ModelViewer({
   src,
   orient,
-  autoRotate = true,
   className,
-  contact = true,
   label,
   hint = true,
   tint = TINT,
@@ -123,24 +134,16 @@ export function ModelViewer({
 }: {
   src: string;
   orient?: Orient;
-  autoRotate?: boolean;
   className?: string;
-  contact?: boolean;
   label?: string;
   hint?: boolean;
   tint?: string;
-  /** spinning, non-interactive preview that lets clicks pass through to a parent link */
+  /** non-interactive, click-through preview */
   preview?: boolean;
 }) {
   const [mounted, setMounted] = useState(false);
-  const [interacted, setInteracted] = useState(false);
-  const [reduced, setReduced] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-    setReduced(prefersReducedMotion());
-  }, []);
+  useEffect(() => setMounted(true), []);
 
   const interactive = !preview;
 
@@ -148,7 +151,7 @@ export function ModelViewer({
     <div
       ref={wrap}
       className={`model-viewer ${preview ? "model-viewer--preview" : ""} ${className ?? ""}`}
-      {...(interactive ? { "data-cursor": "drag", "data-cursor-label": "drag · scroll", "data-lenis-prevent": "" } : {})}
+      {...(interactive ? { "data-cursor": "drag", "data-cursor-label": "drag · zoom", "data-lenis-prevent": "" } : {})}
       role="img"
       aria-label={
         label
@@ -158,24 +161,19 @@ export function ModelViewer({
     >
       {mounted && (
         <Canvas
-          shadows={interactive}
-          dpr={preview ? [1, 1.25] : [1, 1.5]}
+          frameloop="demand"
+          dpr={[1, 1.5]}
           camera={{ position: [0, 0.6, 5.2], fov: 38 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-          onPointerDown={() => interactive && setInteracted(true)}
         >
-          <ambientLight intensity={0.55} />
-          <directionalLight position={[4, 6, 5]} intensity={1.6} castShadow={interactive} shadow-mapSize={[512, 512]} />
+          <ambientLight intensity={0.75} />
+          <hemisphereLight args={["#dfe8f5", "#1a2740", 0.6]} />
+          <directionalLight position={[4, 6, 5]} intensity={1.4} />
           <directionalLight position={[-5, 2, -4]} intensity={0.6} color="#6fa8e0" />
           <Suspense fallback={<Loader />}>
             <Model src={src} orient={orient} tint={tint} />
+            <LoadBurst />
           </Suspense>
-          <Suspense fallback={null}>
-            <Environment preset="city" />
-          </Suspense>
-          {contact && interactive && (
-            <ContactShadows position={[0, -1.35, 0]} opacity={0.45} scale={9} blur={2.6} far={3} />
-          )}
           <OrbitControls
             makeDefault
             enablePan={false}
@@ -183,10 +181,7 @@ export function ModelViewer({
             enableZoom={interactive}
             minDistance={3}
             maxDistance={9}
-            autoRotate={(preview ? true : autoRotate) && !interacted && !reduced}
-            autoRotateSpeed={preview ? 1.6 : 0.9}
-            enableDamping
-            dampingFactor={0.08}
+            enableDamping={false}
           />
         </Canvas>
       )}

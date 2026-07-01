@@ -4,8 +4,8 @@ export const profile = {
   initials: "GK",
   role: "Mechanical Engineering · Applied AI",
   school: "University of Hong Kong",
-  // Gihyun's own words (from the original site). Replace freely.
-  tagline: "The moment a part finally fits is still my favourite part of engineering.",
+  // Headline from the original gihyunkim.com.
+  tagline: "Drafting ideas. Building reality.",
   blurb:
     "Engineering student at the University of Hong Kong, majoring in Mechanical Engineering and " +
     "pursuing the BEng X + MScEng in AI Engineering on a full scholarship. Laidlaw Scholar researching " +
@@ -17,6 +17,7 @@ export const profile = {
   emailAlt: "kim.gihyun1106@gmail.com",
   cvPdf: "/assets/cv.pdf",
   socials: [
+    { label: "LinkedIn", short: "LI", href: "https://www.linkedin.com/in/gihyun-kim" },
     { label: "GitHub", short: "GH", href: "https://github.com/kim-gihyun" },
     { label: "Email", short: "EM", href: "mailto:ghkim1106@connect.hku.hk" },
   ],

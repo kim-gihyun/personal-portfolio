@@ -25,7 +25,7 @@ export function PostBody({ html }: { html: string }) {
     const rx = parseFloat(m[2] || "0");
     nodes.push(
       <div key={key++} className="post-model-live">
-        <ModelViewer src={src} orient={{ rx }} autoRotate contact />
+        <ModelViewer src={src} orient={{ rx }} />
       </div>,
     );
     last = m.index + m[0].length;
