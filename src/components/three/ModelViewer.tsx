@@ -5,6 +5,7 @@ import { Canvas, useLoader, useThree } from "@react-three/fiber";
 import { OrbitControls, Center, Html, useGLTF } from "@react-three/drei";
 import { STLLoader } from "three-stdlib";
 import * as THREE from "three";
+import { useTheme } from "@/lib/theme";
 
 // Renders a burst of frames when the model (re)loads, then goes idle. With
 // frameloop="demand" this keeps GPU at ~0 unless the user is dragging.
@@ -25,8 +26,10 @@ type Orient = { rx?: number; ry?: number; zoom?: number };
 
 const deg = (d = 0) => (d * Math.PI) / 180;
 
-// cool brushed-steel tint so the CAD reads as a rendered part, not white plastic
-const TINT = "#7c8aa6";
+// brushed-steel tint so the CAD reads as a rendered part. Two tones so it sits
+// well on both backgrounds: lighter steel on navy (dark), deeper slate on paper (light).
+const TINT_DARK = "#7c8aa6";
+const TINT_LIGHT = "#5c6879";
 
 /** Normalize any object to ~2.2 units across its largest axis, centered. */
 function useNormalizedScale(obj: THREE.Object3D | null) {
@@ -129,7 +132,7 @@ export function ModelViewer({
   className,
   label,
   hint = true,
-  tint = TINT,
+  tint: tintProp,
   preview = false,
 }: {
   src: string;
@@ -143,9 +146,11 @@ export function ModelViewer({
 }) {
   const [mounted, setMounted] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
   useEffect(() => setMounted(true), []);
 
   const interactive = !preview;
+  const tint = tintProp ?? (theme === "dark" ? TINT_DARK : TINT_LIGHT);
 
   return (
     <div
@@ -172,7 +177,8 @@ export function ModelViewer({
           <directionalLight position={[-5, 2, -4]} intensity={0.6} color="#6fa8e0" />
           <Suspense fallback={<Loader />}>
             <Model src={src} orient={orient} tint={tint} />
-            <LoadBurst />
+            {/* keyed by tint so a theme toggle re-renders the recoloured model */}
+            <LoadBurst key={tint} />
           </Suspense>
           <OrbitControls
             makeDefault

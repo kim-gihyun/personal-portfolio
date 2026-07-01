@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { JourneyMap } from "@/components/personal/JourneyMap";
-import { Audio } from "@/components/personal/Audio";
+import { Keyboards } from "@/components/personal/Keyboards";
 import { Gallery } from "@/components/ui/Gallery";
 import { songs, photos } from "@/lib/data/offduty";
 
@@ -31,18 +31,18 @@ export default function PersonalPage() {
         <JourneyMap />
       </section>
 
-      {/* audio */}
-      <section className="section shell" id="audio">
+      {/* keyboards */}
+      <section className="section shell" id="keebs">
         <div className="section-head">
-          <h2 className="section-title">On the ears</h2>
+          <h2 className="section-title">Mechanical keyboards</h2>
         </div>
         {/* TODO(Gihyun): make this yours — a line or two in your own voice. */}
         <p className="section-note measure">
-          A small obsession on the side. What I listen on, from reference IEMs to the pair that lives
-          next to the laptop.
+          A small obsession on the side: ergonomics first, then sound. A quick tour of mounts and the
+          board I keep coming back to.
         </p>
         <Reveal>
-          <Audio />
+          <Keyboards />
         </Reveal>
       </section>
 

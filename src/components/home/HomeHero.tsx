@@ -1,28 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
 import { ModelViewer } from "@/components/three/ModelViewer";
 import { profile } from "@/lib/data/profile";
 
-interface LenisLike {
-  stop?: () => void;
-  start?: () => void;
-}
-
 export function HomeHero() {
-  // single, unscrollable screen — lock the page and hide the footer while here
-  useEffect(() => {
-    const root = document.documentElement;
-    root.classList.add("home-locked");
-    const lenis = (window as unknown as { __lenis?: LenisLike }).__lenis;
-    lenis?.stop?.();
-    return () => {
-      root.classList.remove("home-locked");
-      lenis?.start?.();
-    };
-  }, []);
-
   return (
     <section className="home">
       <div className="home-grid shell">
@@ -34,14 +16,13 @@ export function HomeHero() {
           <p className="home-tagline">
             Drafting ideas. Building <em>reality</em>.
           </p>
-          <p className="home-sub">Mechanical Engineering · University of Hong Kong</p>
 
           <div className="home-cta">
             <Link href="/portfolio" className="btn" data-cursor="link">
               View the work <span aria-hidden>→</span>
             </Link>
             <Link href="/cv" className="btn btn--ghost" data-cursor="link">
-              Curriculum vitae
+              CV
             </Link>
           </div>
 
@@ -66,6 +47,11 @@ export function HomeHero() {
           </div>
           <span className="home-model-cap readout">Fig. 01 · Robocon robot · drag to rotate</span>
         </div>
+      </div>
+
+      <div className="home-scroll readout" aria-hidden>
+        <span>scroll</span>
+        <span className="home-scroll-line" />
       </div>
     </section>
   );

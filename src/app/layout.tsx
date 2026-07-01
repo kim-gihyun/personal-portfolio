@@ -4,6 +4,7 @@ import "./globals.css";
 import { profile } from "@/lib/data/profile";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
 import { Cursor } from "@/components/chrome/Cursor";
+import { GkBackdrop } from "@/components/chrome/GkBackdrop";
 import { Nav } from "@/components/chrome/Nav";
 import { Footer } from "@/components/chrome/Footer";
 import { Preloader } from "@/components/chrome/Preloader";
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body suppressHydrationWarning>
         <Preloader name={profile.name} />
+        <GkBackdrop />
         <Cursor />
         <SmoothScroll>
           <Nav />

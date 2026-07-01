@@ -25,48 +25,49 @@ export const photos: Photo[] = [
   { src: "/assets/Life%20Photos/2026%20-%20shun%20hiing%20college%20high%20table%20dinner.jpg", fig: "10", caption: "High table, Shun Hing", year: "2026" },
 ];
 
-/* ---- audio gear (TODO(Gihyun): notes are plain drafts — add your own take) ---- */
-export const audioHero = {
-  name: "Sennheiser IE 600",
-  rev: "IEM",
-  oneLiner: "The pair I reach for first.",
+/* ---- the mechanical keyboard shrine ---- */
+export const keebHero = {
+  name: "Halo65",
+  rev: "V1",
+  oneLiner: "The one I keep coming back to.",
   verdict:
-    "My main in-ear monitors — a single dynamic driver tuned for detailed, natural sound. What I use when I actually want to listen, not just have something on.",
+    "I've typed on a lot of 65s. The Halo65 V1 wins on sound — a deep, rounded thock with none of the hollow ping the louder boards make. Not the flashiest spec sheet; the one my ears agree with.",
   specs: [
-    { k: "Type", v: "In-ear monitor" },
-    { k: "Driver", v: "Single dynamic" },
-    { k: "Cable", v: "Wired · removable" },
-    { k: "Use", v: "Critical listening" },
+    { k: "Layout", v: "65% · 67 keys" },
+    { k: "Mount", v: "Gasket" },
+    { k: "Plate", v: "POM" },
+    { k: "Switch", v: "Linear, lubed" },
+    { k: "Profile", v: "Cherry PBT" },
+    { k: "Acoustic", v: "Deep thock" },
   ],
 };
 
-export type Glyph = "iem" | "overear" | "earbud" | "stembud";
-export type AudioItem = { name: string; type: string; note: string; glyph: Glyph; tag?: string; status?: string };
-export const audioGear: AudioItem[] = [
+export type MountType = { name: string; feel: string; sound: string; verdict: string; pick?: boolean };
+export const mounts: MountType[] = [
   {
-    name: "Sennheiser IE 600",
-    type: "In-ear monitors",
-    note: "Reference IEMs — detailed and natural.",
-    glyph: "iem",
-    tag: "daily driver",
+    name: "Gasket mount",
+    feel: "Soft, cushioned bottom-out — the plate floats on gaskets, so there's a little give before it stops.",
+    sound: "Deeper, rounder, more absorbed. Less high-frequency clack.",
+    verdict: "My default. The give is the point.",
+    pick: true,
   },
   {
-    name: "Sennheiser Momentum 4",
-    type: "Wireless over-ear",
-    note: "ANC headphones for long sessions.",
-    glyph: "overear",
+    name: "Top mount",
+    feel: "Firmer and more uniform across the board; a defined, consistent bottom-out.",
+    sound: "Crisper and a touch louder, with more of the plate's voice coming through.",
+    verdict: "Great if you like a stiffer surface. Not my acoustic.",
   },
   {
-    name: "Galaxy Buds 4 Pro",
-    type: "Wireless earbuds",
-    note: "Daily buds for calls and walks.",
-    glyph: "earbud",
-    status: "currently lost",
+    name: "Tray mount",
+    feel: "Stiff in the middle, softer at the edges — the classic, uneven feel.",
+    sound: "Most variable; depends heavily on foam and how it's tightened down.",
+    verdict: "Fine, fixable, but I'd rather start somewhere better.",
   },
-  {
-    name: "AirPods 3",
-    type: "Open-fit earbuds",
-    note: "Grab-and-go pair by the laptop.",
-    glyph: "stembud",
-  },
+];
+
+// TODO(Gihyun): keyboard notes are drafts — adjust to match your actual setup.
+export const keebNotes = [
+  { k: "Ergonomics", v: "65% layout keeps the mouse closer — less shoulder reach, more desk for notes." },
+  { k: "Tuning", v: "Switches lubed and stabilisers modded — a quick pass that fixes most of the sound." },
+  { k: "Preference", v: "Mostly linear switches for everyday typing and CAD." },
 ];
