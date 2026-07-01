@@ -163,7 +163,7 @@ export function ModelViewer({
         <Canvas
           frameloop="demand"
           dpr={[1, 1.5]}
-          camera={{ position: [0, 0.6, 5.2], fov: 38 }}
+          camera={{ position: [0, 0.5, 4.5], fov: 38 }}
           gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         >
           <ambientLight intensity={0.75} />

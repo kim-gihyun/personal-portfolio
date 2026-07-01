@@ -1,5 +1,5 @@
-import { HomeHub } from "@/components/home/HomeHub";
+import { HomeHero } from "@/components/home/HomeHero";
 
 export default function Home() {
-  return <HomeHub />;
+  return <HomeHero />;
 }
