@@ -273,18 +273,31 @@ html.xcur-on .xcur > span { opacity: 1; }
 .xcur.lock .xc-snap, .xcur.lock .xc-read { opacity: 0; }
 .xcur.quiet .xc-read, .xcur.quiet .xc-snap { opacity: 0 !important; }
 
-/* blueprint dot-aura revealed around the cursor — ambient background (z-index:-1) */
+/* blueprint dot-grid revealed by a looming halo around the cursor (z-index:-1).
+   The grid is pinned to the page (JS counter-moves background-position); only
+   the light moves, so it reads as a flashlight over the drawing, not a sticker.
+   --halo (set from JS) is the mask radius — it blooms with cursor speed. */
 .cursor-field {
   position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none;
-  width: 560px; height: 560px; margin: -280px 0 0 -280px;
+  width: 720px; height: 720px; margin: -360px 0 0 -360px;
   opacity: 0; transition: opacity 0.22s ease; will-change: transform;
   background-image: radial-gradient(color-mix(in oklch, var(--accent) 62%, transparent) 1.3px, transparent 1.4px);
   background-size: 26px 26px;
-  -webkit-mask: radial-gradient(circle 260px at center, #000 0%, rgba(0,0,0,0.35) 46%, transparent 72%);
-          mask: radial-gradient(circle 260px at center, #000 0%, rgba(0,0,0,0.35) 46%, transparent 72%);
+  -webkit-mask: radial-gradient(circle var(--halo, 260px) at center, #000 0%, rgba(0,0,0,0.35) 46%, transparent 72%);
+          mask: radial-gradient(circle var(--halo, 260px) at center, #000 0%, rgba(0,0,0,0.35) 46%, transparent 72%);
+}
+/* soft core that breathes while the cursor rests — the halo looms, never sits */
+.cursor-field::after {
+  content: ""; position: absolute; inset: 22%; border-radius: 50%;
+  background: radial-gradient(circle, var(--glow), transparent 62%);
+  animation: haloLoom 4.4s ease-in-out infinite;
+}
+@keyframes haloLoom {
+  0%, 100% { transform: scale(0.82); opacity: 0.2; }
+  50%      { transform: scale(1.06); opacity: 0.42; }
 }
 html.xcur-on .cursor-field { opacity: 0.9; }
-/* over interactive targets the aura brightens (JS also eases up its scale) */
+/* over interactive targets the halo brightens (JS also eases up its reach) */
 .cursor-field.hot {
   background-image: radial-gradient(color-mix(in oklch, var(--accent) 80%, transparent) 1.45px, transparent 1.55px);
 }
@@ -595,8 +608,8 @@ html.home-locked .footer { display: none; }
 /* linework + nodes (currentColor = each branch hue, set per <g>) */
 .mm-guide { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 7; }
 .mm-guide--in { opacity: 0.55; }
-.mm-spoke { fill: none; stroke: currentColor; stroke-width: 1.6; opacity: 0.5; }
-.mm-twig { stroke: currentColor; stroke-width: 1; opacity: 0.4; stroke-linecap: round; }
+.mm-spoke { fill: none; stroke: currentColor; stroke-width: 1.6; opacity: 0.5; stroke-linejoin: miter; stroke-linecap: square; }
+.mm-twig { stroke: currentColor; stroke-width: 1; opacity: 0.4; stroke-linecap: square; }
 .mm-dot { fill: currentColor; opacity: 0.92; }
 .mm-hub { fill: color-mix(in oklch, var(--bg) 78%, currentColor); stroke: currentColor; stroke-width: 1.8; }
 .mm-core-dot { fill: var(--accent-2); opacity: 0.85; }
@@ -606,7 +619,7 @@ html.home-locked .footer { display: none; }
 .mm-center { position: absolute; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; }
 .mm-center-box {
   display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
-  padding: 0.5rem 1rem; border-radius: 999px; text-align: center;
+  padding: 0.5rem 1rem; border-radius: 3px; text-align: center;
   background: color-mix(in oklch, var(--bg) 80%, transparent); backdrop-filter: blur(3px);
   box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--accent) 55%, transparent);
 }
@@ -616,13 +629,13 @@ html.home-locked .footer { display: none; }
 .mm-node { position: absolute; transform: translate(-50%, -50%); z-index: 2; }
 .mm-node-card {
   display: flex; align-items: center; gap: 0.5rem;
-  padding: 0.45rem 0.7rem; border-radius: 8px; white-space: nowrap;
+  padding: 0.45rem 0.7rem; border-radius: 3px; white-space: nowrap;
   background: color-mix(in oklch, var(--bg) 86%, transparent); backdrop-filter: blur(4px);
   box-shadow: inset 0 0 0 1px var(--line);
   transition: box-shadow 0.3s var(--ease-out-quart), background 0.3s;
 }
 .mm-node-dot {
-  width: 9px; height: 9px; border-radius: 50%; flex: none;
+  width: 8px; height: 8px; flex: none; transform: rotate(45deg); /* survey diamond */
   background: var(--c, var(--accent));
   box-shadow: 0 0 0 3px color-mix(in oklch, var(--c, var(--accent)) 20%, transparent);
 }
@@ -639,7 +652,7 @@ html.home-locked .footer { display: none; }
   .mm-list { display: grid; gap: 0.55rem; }
   .mm-list-link {
     display: flex; align-items: center; gap: 0.7rem;
-    padding: 0.85rem 1rem; border-radius: 8px; box-shadow: inset 0 0 0 1px var(--line);
+    padding: 0.85rem 1rem; border-radius: 3px; box-shadow: inset 0 0 0 1px var(--line);
     transition: box-shadow 0.3s, background 0.3s;
   }
   .mm-list-link b { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; flex: none; }

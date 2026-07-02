@@ -66,17 +66,15 @@ type Hub = Seed & {
   dots: Dot[];
 };
 
-// curved connector from a → b (blueprint arc)
-function curve(ax: number, ay: number, bx: number, by: number) {
-  const mx = (ax + bx) / 2;
-  const my = (ay + by) / 2;
+// angular connector from a → b: 45° diagonal leg, then an axis-aligned run —
+// the octilinear routing of a drafting leader line / PCB trace
+function elbow(ax: number, ay: number, bx: number, by: number) {
   const dx = bx - ax;
   const dy = by - ay;
-  const len = Math.hypot(dx, dy) || 1;
-  const off = 22;
-  const px = mx + (-dy / len) * off;
-  const py = my + (dx / len) * off;
-  return `M${ax.toFixed(1)} ${ay.toFixed(1)} Q${px.toFixed(1)} ${py.toFixed(1)} ${bx.toFixed(1)} ${by.toFixed(1)}`;
+  const diag = Math.min(Math.abs(dx), Math.abs(dy));
+  const mx = r2(ax + Math.sign(dx) * diag);
+  const my = r2(ay + Math.sign(dy) * diag);
+  return `M${ax} ${ay} L${mx} ${my} L${bx} ${by}`;
 }
 
 const HUBS: Hub[] = SEEDS.map((seed, i) => {
@@ -86,31 +84,47 @@ const HUBS: Hub[] = SEEDS.map((seed, i) => {
   const lx = r2(CX + (hx - CX) * LABEL_F);
   const ly = r2(CY + (hy - CY) * LABEL_F);
 
-  // true outward direction (ellipse distorts the ring angle)
+  // true outward direction (ellipse distorts the ring angle), snapped to the
+  // 45° drafting grid — every twig leaves the hub on an octilinear bearing
   const outDeg = Math.atan2(hy - CY, hx - CX) / DEG;
+  const base = Math.round(outDeg / 45) * 45;
   const r = rng(i * 131 + 7);
   const twigs: Line[] = [];
   const dots: Dot[] = [];
+  const offsets = [-90, -45, 0, 45, 90]; // fan of grid bearings around the spoke
+  for (let b = offsets.length - 1; b > 0; b--) {
+    const j = Math.floor(r() * (b + 1));
+    [offsets[b], offsets[j]] = [offsets[j], offsets[b]];
+  }
   const branches = 3 + Math.floor(r() * 2); // 3–4 primary branches
   for (let b = 0; b < branches; b++) {
-    const spread = (branches === 1 ? 0 : b / (branches - 1) - 0.5) * 78; // fan ±39°
-    const ang = (outDeg + spread + (r() - 0.5) * 12) * DEG;
-    const len = 40 + r() * 40;
+    const ang = (base + offsets[b]) * DEG;
+    const len = 42 + r() * 38;
     const x1 = r2(hx + Math.cos(ang) * len);
     const y1 = r2(hy + Math.sin(ang) * len);
     twigs.push({ x1: hx, y1: hy, x2: x1, y2: y1 });
     dots.push({ x: x1, y: y1, r: r2(2.2 + r() * 1.5) });
     if (r() > 0.42) {
-      const ang2 = ang + (r() - 0.5) * 44 * DEG;
-      const len2 = 18 + r() * 26;
+      const ang2 = ang + (r() > 0.5 ? 45 : -45) * DEG; // hard 45° dogleg
+      const len2 = 16 + r() * 24;
       const x2 = r2(x1 + Math.cos(ang2) * len2);
       const y2 = r2(y1 + Math.sin(ang2) * len2);
       twigs.push({ x1, y1, x2, y2 });
       dots.push({ x: x2, y: y2, r: r2(1.5 + r() * 1.3) });
     }
   }
-  return { ...seed, hx, hy, lx, ly, spoke: curve(CX, CY, hx, hy), twigs, dots };
+  return { ...seed, hx, hy, lx, ly, spoke: elbow(CX, CY, hx, hy), twigs, dots };
 });
+
+// dashed guide polygons through the hubs (outer) and at half radius (inner)
+const GUIDE_OUT = HUBS.map((h) => `${h.hx},${h.hy}`).join(" ");
+const GUIDE_IN = HUBS.map(
+  (h) => `${r2(CX + (h.hx - CX) * 0.52)},${r2(CY + (h.hy - CY) * 0.52)}`,
+).join(" ");
+
+// diamond survey marker at each hub
+const diamond = (x: number, y: number, s: number) =>
+  `M${x} ${r2(y - s)} L${r2(x + s)} ${y} L${x} ${r2(y + s)} L${r2(x - s)} ${y} Z`;
 
 // scattered particle core
 const CORE: Dot[] = (() => {
@@ -148,16 +162,16 @@ export function Mindmap() {
         transformOrigin: "center",
       });
 
-      const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: "top 80%", once: true } });
-      tl.to(".mm-guide", { opacity: 1, duration: 0.7, ease: "power1.out" })
-        .to(".mm-center-box", { opacity: 1, scale: 1, duration: 0.55, ease: "back.out(1.7)" }, "-=0.4")
-        .to(".mm-center-dot", { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, "<")
-        .to(".mm-core-dot", { opacity: 0.85, scale: 1, duration: 0.5, ease: "back.out(2)", stagger: 0.03 }, "<0.05")
-        .to(".mm-spoke", { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut", stagger: 0.06 }, "-=0.25")
-        .to(".mm-hub", { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(1.7)", stagger: 0.06 }, "-=0.5")
-        .to(".mm-twig", { strokeDashoffset: 0, duration: 0.55, ease: "power2.out", stagger: 0.012 }, "-=0.35")
-        .to(".mm-dot", { opacity: 0.92, scale: 1, duration: 0.4, ease: "back.out(2)", stagger: 0.01 }, "-=0.45")
-        .to(".mm-node-card", { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power3.out", stagger: 0.06 }, "-=0.55");
+      const tl = gsap.timeline({ scrollTrigger: { trigger: el, start: "top 82%", once: true } });
+      tl.to(".mm-guide", { opacity: 1, duration: 0.35, ease: "power1.out" })
+        .to(".mm-center-box", { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.7)" }, "-=0.25")
+        .to(".mm-center-dot", { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, "<")
+        .to(".mm-core-dot", { opacity: 0.85, scale: 1, duration: 0.35, ease: "back.out(2)", stagger: 0.015 }, "<0.03")
+        .to(".mm-spoke", { strokeDashoffset: 0, duration: 0.45, ease: "power2.out", stagger: 0.035 }, "-=0.25")
+        .to(".mm-hub", { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(1.7)", stagger: 0.035 }, "-=0.3")
+        .to(".mm-twig", { strokeDashoffset: 0, duration: 0.3, ease: "power2.out", stagger: 0.008 }, "-=0.22")
+        .to(".mm-dot", { opacity: 0.92, scale: 1, duration: 0.25, ease: "back.out(2)", stagger: 0.006 }, "-=0.25")
+        .to(".mm-node-card", { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "power3.out", stagger: 0.04 }, "-=0.3");
     }, el);
     return () => ctx.revert();
   }, []);
@@ -174,9 +188,9 @@ export function Mindmap() {
             </radialGradient>
           </defs>
 
-          {/* faint blueprint guide ellipse through the hubs */}
-          <ellipse className="mm-guide" cx={CX} cy={CY} rx={RX} ry={RY} />
-          <ellipse className="mm-guide mm-guide--in" cx={CX} cy={CY} rx={RX * 0.52} ry={RY * 0.52} />
+          {/* faint blueprint guide polygons through the hubs */}
+          <polygon className="mm-guide" points={GUIDE_OUT} />
+          <polygon className="mm-guide mm-guide--in" points={GUIDE_IN} />
 
           {/* core glow */}
           <circle cx={CX} cy={CY} r={150} fill="url(#mm-core)" />
@@ -191,7 +205,7 @@ export function Mindmap() {
               {h.dots.map((d, j) => (
                 <circle key={`d${j}`} className="mm-dot" cx={d.x} cy={d.y} r={d.r} />
               ))}
-              <circle className="mm-hub" cx={h.hx} cy={h.hy} r={8} />
+              <path className="mm-hub" d={diamond(h.hx, h.hy, 8)} />
             </g>
           ))}
 

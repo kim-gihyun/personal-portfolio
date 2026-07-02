@@ -32,7 +32,7 @@ export function Cursor() {
     let my = -300;
     let ax = -300; // aura position — lerps behind the cursor for a live trail
     let ay = -300;
-    let cs = 1;    // aura scale — grows over interactive targets
+    let hs = 1;    // halo reach (mask radius ×) — blooms with speed and over targets
     let hot = false;
     let ticking = false;
     let auraRAF = 0;
@@ -65,16 +65,22 @@ export function Cursor() {
       }
     };
 
-    // soft trailing dot-aura: eases toward the cursor and eases its scale, then
-    // parks itself once caught up (no rAF while idle)
+    // looming halo: a light that drifts after the cursor, revealing a dot grid
+    // pinned to the page (counter-scrolled background). Its reach blooms with
+    // cursor speed and over interactive targets, then it parks (no rAF idle).
     const auraTick = () => {
-      const target = hot ? 1.24 : 1;
-      ax += (mx - ax) * 0.24;
-      ay += (my - ay) * 0.24;
-      cs += (target - cs) * 0.2;
-      fieldRef.current!.style.transform = `translate(${ax}px,${ay}px) scale(${cs.toFixed(3)})`;
-      const settled =
-        Math.abs(mx - ax) < 0.4 && Math.abs(my - ay) < 0.4 && Math.abs(target - cs) < 0.004;
+      const dx = mx - ax;
+      const dy = my - ay;
+      const speed = Math.hypot(dx, dy);
+      const target = (hot ? 1.3 : 1) + Math.min(speed / 220, 0.5);
+      ax += dx * 0.16;
+      ay += dy * 0.16;
+      hs += (target - hs) * 0.09;
+      const f = fieldRef.current!;
+      f.style.transform = `translate(${ax}px,${ay}px)`;
+      f.style.backgroundPosition = `${-ax}px ${-ay}px`; // hold the grid still in page space
+      f.style.setProperty("--halo", (260 * hs).toFixed(1) + "px");
+      const settled = speed < 0.4 && Math.abs(target - hs) < 0.004;
       auraRAF = settled ? 0 : requestAnimationFrame(auraTick);
     };
     const kickAura = () => {
