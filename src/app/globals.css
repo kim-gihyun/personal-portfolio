@@ -606,14 +606,52 @@ html.home-locked .footer { display: none; }
 .mm-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
 /* linework + nodes (currentColor = each branch hue, set per <g>) */
-.mm-guide { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 7; }
-.mm-guide--in { opacity: 0.55; }
+.mm-guide { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 3 7; animation: mmDash 14s linear infinite; }
+.mm-guide--in { opacity: 0.55; animation-direction: reverse; }
+@keyframes mmDash { to { stroke-dashoffset: -100; } }
 .mm-spoke { fill: none; stroke: currentColor; stroke-width: 1.6; opacity: 0.5; stroke-linejoin: miter; stroke-linecap: square; }
 .mm-twig { stroke: currentColor; stroke-width: 1; opacity: 0.4; stroke-linecap: square; }
 .mm-dot { fill: currentColor; opacity: 0.92; }
 .mm-hub { fill: color-mix(in oklch, var(--bg) 78%, currentColor); stroke: currentColor; stroke-width: 1.8; }
 .mm-core-dot { fill: var(--accent-2); opacity: 0.85; }
 .mm-center-dot { fill: var(--accent-ink); }
+
+/* signal pulse that travels each spoke once the intro has drawn it */
+.mm-pulse {
+  fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: square;
+  stroke-dasharray: 14 600; stroke-dashoffset: 614; opacity: 0;
+}
+.mm.is-live .mm-pulse { opacity: 0.9; animation: mmPulse 4.2s linear infinite; }
+@keyframes mmPulse { from { stroke-dashoffset: 614; } to { stroke-dashoffset: -14; } }
+
+/* one branch in focus (hover or pressed) dims the rest of the drawing */
+.mm-cat, .mm-node, .mm-center { transition: opacity 0.35s var(--ease-out-quart); }
+.mm.has-focus .mm-cat:not(.is-focus):not(.mm-kids-lines) { opacity: 0.22; }
+.mm.has-focus .mm-node:not(.is-focus) { opacity: 0.3; }
+.mm.has-focus .mm-center { opacity: 0.45; }
+.mm-cat.is-focus .mm-spoke { opacity: 0.9; stroke-width: 2; }
+.mm-cat.is-focus .mm-twig { opacity: 0.7; }
+
+/* pressed-state extensions: leader lines + child link chips */
+.mm-kid-link { fill: none; stroke: currentColor; stroke-width: 1.4; opacity: 0.75; stroke-linejoin: miter; stroke-linecap: square; }
+.mm-kid { position: absolute; transform: translate(-50%, -50%); z-index: 4; }
+.mm-kid-card {
+  display: inline-flex; align-items: center; gap: 0.45rem; white-space: nowrap;
+  font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink); padding: 0.32rem 0.55rem; border-radius: 2px;
+  background: color-mix(in oklch, var(--bg) 88%, transparent); backdrop-filter: blur(4px);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--c, var(--accent)) 55%, transparent);
+  transition: box-shadow 0.25s, background 0.25s, color 0.25s;
+}
+.mm-kid-card .mm-node-dot { width: 6px; height: 6px; box-shadow: none; }
+.mm-kid-card:hover {
+  color: var(--accent-ink);
+  background: color-mix(in oklch, var(--bg) 90%, var(--c, var(--accent)));
+  box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--c, var(--accent)) 85%, transparent);
+}
+
+/* parallax wrapper for the HTML label layer */
+.mm-float { position: absolute; inset: 0; }
 
 /* centre label — wrapper centres, inner box scales/fades in */
 .mm-center { position: absolute; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; }
@@ -625,14 +663,24 @@ html.home-locked .footer { display: none; }
 }
 .mm-center-box b { font-family: var(--font-display); font-weight: 700; font-size: 1.02rem; letter-spacing: -0.01em; color: var(--accent-ink); }
 
-/* clickable branch labels — wrapper centres, inner card animates */
+/* pressable branch labels — wrapper centres, inner card animates */
 .mm-node { position: absolute; transform: translate(-50%, -50%); z-index: 2; }
 .mm-node-card {
   display: flex; align-items: center; gap: 0.5rem;
+  border: 0; font: inherit; text-align: left; cursor: pointer;
   padding: 0.45rem 0.7rem; border-radius: 3px; white-space: nowrap;
   background: color-mix(in oklch, var(--bg) 86%, transparent); backdrop-filter: blur(4px);
   box-shadow: inset 0 0 0 1px var(--line);
   transition: box-shadow 0.3s var(--ease-out-quart), background 0.3s;
+}
+.mm-node-plus {
+  font-family: var(--font-mono); font-size: 0.85rem; line-height: 1;
+  color: var(--muted); margin-left: 0.15rem; transition: color 0.25s;
+}
+.mm-node-card:hover .mm-node-plus, .mm-node-card.is-open .mm-node-plus { color: var(--accent-ink); }
+.mm-node-card.is-open {
+  box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--c, var(--accent)) 75%, transparent);
+  background: color-mix(in oklch, var(--bg) 90%, var(--c, var(--accent)));
 }
 .mm-node-dot {
   width: 8px; height: 8px; flex: none; transform: rotate(45deg); /* survey diamond */
@@ -659,6 +707,11 @@ html.home-locked .footer { display: none; }
   .mm-list-link .mm-node-cat { flex: 1; }
   .mm-list-link span[aria-hidden] { color: var(--c, var(--accent)); margin-left: auto; font-size: 1.1rem; }
   .mm-list-link:hover { box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--c, var(--accent)) 60%, transparent); background: var(--bg-2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mm-guide, .mm-pulse { animation: none; }
+  .mm-pulse { opacity: 0 !important; }
 }
 
 /* faint "GK" watermark behind every page (slides to centre on the home) */
