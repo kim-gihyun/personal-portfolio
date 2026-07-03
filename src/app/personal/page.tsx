@@ -5,11 +5,15 @@ import { JourneyMap } from "@/components/personal/JourneyMap";
 import { Keyboards } from "@/components/personal/Keyboards";
 import { Gallery } from "@/components/ui/Gallery";
 import { songs, photos } from "@/lib/data/offduty";
+import { pageOg } from "@/lib/og";
+
+const description =
+  "Off the clock — a map of where Gihyun Kim has lived and travelled, mechanical keyboards, songs on repeat, and life in photographs.";
 
 export const metadata: Metadata = {
   title: "Personal",
-  description:
-    "Off the clock — a map of where Gihyun Kim has lived and travelled, mechanical keyboards, songs on repeat, and life in photographs.",
+  description,
+  ...pageOg("Personal", description, "/personal/"),
 };
 
 export default function PersonalPage() {

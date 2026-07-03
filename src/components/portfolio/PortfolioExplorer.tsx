@@ -130,6 +130,9 @@ export function PortfolioExplorer() {
               <div className="pf-detail-meta">
                 <div><span className="readout">Role</span><b>{active.role}</b></div>
                 <div><span className="readout">Status</span><b>{active.status}</b></div>
+                {active.results && (
+                  <div className="pf-meta-wide"><span className="readout">Results</span><b>{active.results}</b></div>
+                )}
               </div>
 
               <p className="pf-lead">{active.blurb}</p>

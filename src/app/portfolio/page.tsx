@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { PortfolioExplorer } from "@/components/portfolio/PortfolioExplorer";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { pageOg } from "@/lib/og";
+
+const description =
+  "Six engineering builds by Gihyun Kim — interactive 3D models with material context and revision histories: a Robocon robot, laundry sensor, transport trolley, solar tracker, and C-TPU test rigs.";
 
 export const metadata: Metadata = {
   title: "Work",
-  description:
-    "Six engineering builds by Gihyun Kim — interactive 3D models with material context and revision histories: a Robocon robot, laundry sensor, transport trolley, solar tracker, and C-TPU test rigs.",
+  description,
+  ...pageOg("Work", description, "/portfolio/"),
 };
 
 export default function PortfolioPage() {

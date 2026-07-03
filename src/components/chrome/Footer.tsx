@@ -62,8 +62,7 @@ export function Footer() {
             </div>
             <div className="footer-sign">
               <span className="readout">Signed</span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="footer-sig" src="/assets/signature.jpeg" alt="Gihyun Kim signature" />
+              <span className="footer-sig-mono" aria-label="G K monogram">GK</span>
             </div>
           </div>
         </div>

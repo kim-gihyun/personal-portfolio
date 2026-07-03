@@ -3,11 +3,15 @@ import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
+import { pageOg } from "@/lib/og";
+
+const description =
+  "The engineering log of Gihyun Kim — research progress reports on triboelectric materials, gyroid fabrics, and the TENG glove, plus the occasional note.";
 
 export const metadata: Metadata = {
   title: "Log",
-  description:
-    "The engineering log of Gihyun Kim — research progress reports on triboelectric materials, gyroid fabrics, and the TENG glove, plus the occasional note.",
+  description,
+  ...pageOg("Log", description, "/blog/"),
 };
 
 const covers: Record<string, string> = {

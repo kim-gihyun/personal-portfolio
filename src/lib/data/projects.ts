@@ -10,6 +10,8 @@ export type Project = {
   year: string;
   role: string;
   status: string;
+  /** documented outcome — stated plainly, including partials and absences */
+  results?: string;
   categories: string[];
   /** primary interactive model */
   model: string;
@@ -38,6 +40,8 @@ export const projects: Project[] = [
     year: "2025",
     role: "Mechanical design & fabrication",
     status: "Built & competed",
+    results:
+      "Competed in Robocon's internal mini-competition — grippers and rear panel ran under timed match conditions with pneumatics integrated.",
     categories: ["robotics", "cad"],
     model: "/assets/robot.glb",
     orient: { rx: 0, ry: 210, zoom: 1.5 },
@@ -79,6 +83,8 @@ export const projects: Project[] = [
     year: "2025",
     role: "Embedded enclosure design",
     status: "Deployed in dorm",
+    results:
+      "Live in the dorm laundry room — reads the machine's status LED and reports availability to residents via the web page.",
     categories: ["embedded", "cad"],
     model: "/assets/laundry.glb",
     stl: "/assets/Laundry%20Project.STL",
@@ -119,6 +125,8 @@ export const projects: Project[] = [
     year: "2026",
     role: "Parametric assembly design",
     status: "Built & in use",
+    results:
+      "In service for ABU Robocon — carries the team's robots between workshop and venue; printed corner mounts hold them without straps.",
     categories: ["cad", "robotics"],
     model: "/assets/trolley.glb",
     orient: { rx: 90 },
@@ -159,6 +167,8 @@ export const projects: Project[] = [
     year: "2026",
     role: "Mechatronics — CAD + control",
     status: "Working prototype",
+    results:
+      "Reorients toward the brightest light on both axes with smooth, repeatable motion; power gain versus a fixed panel not yet measured.",
     categories: ["robotics", "embedded", "personal"],
     model: "/assets/assembly.glb",
     orient: { rx: -90, ry: 0 },
@@ -199,6 +209,8 @@ export const projects: Project[] = [
     year: "2026",
     role: "Design for characterization",
     status: "Printing / build",
+    results:
+      "No specimen data yet — the rig is still printing in PETG; first strain-vs-resistance runs pending (see RA Progress Report 3).",
     categories: ["research", "cad", "materials"],
     model: "/assets/tensile-tester.glb",
     stl: "/assets/Tensile%20Testing.STL",
@@ -239,6 +251,8 @@ export const projects: Project[] = [
     year: "2026",
     role: "Design for characterization",
     status: "Printing / build",
+    results:
+      "No bend data yet — the rig is still printing; it shares the tensile rig's Arduino DAQ once both are assembled.",
     categories: ["research", "cad", "materials"],
     model: "/assets/bending-tester.glb",
     stl: "/assets/Bending%20Tester.STL",

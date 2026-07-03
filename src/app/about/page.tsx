@@ -3,11 +3,15 @@ import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Reveal } from "@/components/ui/Reveal";
 import { TextReveal } from "@/components/ui/TextReveal";
+import { pageOg } from "@/lib/og";
+
+const description =
+  "Gihyun Kim grew up across Seoul, London, and Istanbul, and now studies Mechanical Engineering at the University of Hong Kong — robotics, materials research, and applied AI.";
 
 export const metadata: Metadata = {
   title: "About",
-  description:
-    "Gihyun Kim grew up across Seoul, London, and Istanbul, and now studies Mechanical Engineering at the University of Hong Kong — robotics, materials research, and applied AI.",
+  description,
+  ...pageOg("About", description, "/about/"),
 };
 
 // Body copy below is Gihyun's own, carried over from his original site.

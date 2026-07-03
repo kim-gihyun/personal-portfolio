@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllPosts, getPost } from "@/lib/posts";
 import { PostBody } from "@/components/blog/PostBody";
+import { pageOg } from "@/lib/og";
 
 export function generateStaticParams() {
   return getAllPosts().map((p) => ({ slug: p.slug }));
@@ -19,6 +20,7 @@ export async function generateMetadata({
   return {
     title: post.meta.title,
     description: post.meta.excerpt,
+    ...pageOg(post.meta.title, post.meta.excerpt, `/blog/${slug}/`),
   };
 }
 

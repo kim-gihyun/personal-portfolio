@@ -30,7 +30,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://kim-gihyun.github.io"),
+  metadataBase: new URL("https://gihyunkim.com"),
   title: {
     default: "Gihyun Kim — Mechanical Engineering, HKU",
     template: "%s — Gihyun Kim",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     title: "Gihyun Kim — Mechanical Engineering, HKU",
     description:
       "Robotics, mechanical design, materials research, and applied AI. Live 3D models, an interactive CV, and an engineering log.",
-    url: "https://kim-gihyun.github.io",
+    url: "https://gihyunkim.com",
     siteName: "Gihyun Kim",
     images: [{ url: "/assets/og-card.png", width: 1200, height: 630 }],
     type: "website",

@@ -457,8 +457,12 @@ html.xcur-on .cursor-field.hot { opacity: 1; }
 .footer-tb i { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .footer-tb b { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; }
 .footer-sign { margin-top: 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
-.footer-sig { width: 165px; height: auto; margin-left: -6px; mix-blend-mode: multiply; opacity: 0.92; }
-[data-theme="dark"] .footer-sig { filter: invert(1); mix-blend-mode: screen; opacity: 0.85; }
+/* text monogram in the old signature slot — sized to keep the title block height */
+.footer-sig-mono {
+  font-family: var(--font-serif); font-style: italic; font-weight: 800;
+  font-size: 2.1rem; line-height: 1.2; letter-spacing: -0.04em;
+  color: var(--accent-ink); opacity: 0.92;
+}
 .footer-base {
   display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem;
   margin-top: 1.5rem;
@@ -920,9 +924,11 @@ html.home-locked .footer { display: none; }
 .pf-float--spec dd { font-weight: 600; font-size: 0.9rem; }
 .pf-stl { display: inline-block; margin-top: 0.7rem; font-family: var(--font-mono); font-size: 0.74rem; }
 
-.pf-detail-meta { display: flex; gap: 2.5rem; margin-bottom: 1.5rem; }
+.pf-detail-meta { display: flex; flex-wrap: wrap; gap: 1rem 2.5rem; margin-bottom: 1.5rem; }
 .pf-detail-meta div { display: flex; flex-direction: column; gap: 0.2rem; }
 .pf-detail-meta b { font-weight: 600; }
+.pf-detail-meta .pf-meta-wide { flex-basis: 100%; }
+.pf-detail-meta .pf-meta-wide b { max-width: 52ch; }
 .pf-lead { font-size: clamp(1.2rem, 2vw, 1.5rem); font-weight: 600; line-height: 1.35; letter-spacing: -0.015em; margin-bottom: 1.5rem; }
 .pf-body { display: flex; flex-direction: column; gap: 1rem; color: var(--ink-2); line-height: 1.62; }
 .pf-context { margin-top: 2rem; }

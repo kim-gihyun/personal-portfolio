@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import { CVTimeline } from "@/components/cv/CVTimeline";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { pageOg } from "@/lib/og";
+
+const description =
+  "Curriculum vitae of Gihyun Kim — education at HKU, research with the Shin Group and Laidlaw Programme, leadership, and a fabrication-and-code toolkit, as an interactive timeline.";
 
 export const metadata: Metadata = {
   title: "Profile / CV",
-  description:
-    "Curriculum vitae of Gihyun Kim — education at HKU, research with the Shin Group and Laidlaw Programme, leadership, and a fabrication-and-code toolkit, as an interactive timeline.",
+  description,
+  ...pageOg("Profile / CV", description, "/cv/"),
 };
 
 export default function CVPage() {
