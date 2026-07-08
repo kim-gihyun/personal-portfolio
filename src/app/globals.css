@@ -609,7 +609,7 @@ html.home-locked .footer { display: none; }
   position: relative; overflow: hidden;
   width: min(100vw, 1920px);
   margin-left: calc(50% - min(50vw, 960px));
-  aspect-ratio: 1400 / 620;
+  aspect-ratio: 1400 / 1040;
 }
 
 /* the gyroid point cloud — canvas fills the stage, 3D lives in its projection */
@@ -630,6 +630,15 @@ html.home-locked .footer { display: none; }
 .mm-node, .mm-center { transition: opacity 0.35s var(--ease-out-quart); }
 .mm.has-focus .mm-node:not(.is-focus) { opacity: 0.35; }
 .mm.has-focus .mm-center { opacity: 0.4; }
+
+/* click-to-navigate warp: cards dissolve while the field is sucked into the
+   chosen subsystem, then a bg wash covers the route change */
+.mm-fade {
+  position: fixed; inset: 0; z-index: 80; pointer-events: none;
+  background: var(--bg); opacity: 0; transition: opacity 0.24s ease;
+}
+.mm.is-warping .mm-fade { opacity: 1; transition-delay: 0.22s; }
+.mm.is-warping .mm-node, .mm.is-warping .mm-center { opacity: 0 !important; transition: opacity 0.3s ease; }
 
 /* card layer above the field */
 .mm-float { position: absolute; inset: 0; }
