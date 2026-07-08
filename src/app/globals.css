@@ -646,22 +646,22 @@ html.home-locked .footer { display: none; }
 /* centre card — drawing title */
 .mm-center { position: absolute; transform: translate(-50%, -50%); z-index: 3; pointer-events: none; }
 .mm-center-box {
-  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
-  padding: 0.55rem 1.05rem; border-radius: 3px; text-align: center;
-  background: color-mix(in oklch, var(--bg) 84%, transparent); backdrop-filter: blur(3px);
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  padding: 0.75rem 1.7rem; border-radius: 4px; text-align: center;
+  background: color-mix(in oklch, var(--bg) 80%, transparent); backdrop-filter: blur(5px);
   box-shadow: inset 0 0 0 1.5px color-mix(in oklch, var(--accent) 55%, transparent);
 }
-.mm-center-box b {
-  font-family: var(--font-mono); font-weight: 600; font-size: 0.72rem;
-  letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent-ink);
+.mm-center-name {
+  font-family: var(--font-display); font-weight: 600; font-style: italic;
+  font-size: 2rem; line-height: 1; letter-spacing: -0.015em; color: var(--ink);
 }
-.mm-center-box .readout { color: var(--muted); }
+.mm-center-box .readout { color: var(--accent-ink); letter-spacing: 0.14em; font-size: 0.62rem; }
 
 /* subsystem cards — links, tiered hierarchy, lift + tilt on hover */
 .mm-node { position: absolute; transform: translate(-50%, -50%); z-index: 2; }
 .mm-node-card {
-  position: relative; display: flex; align-items: center; gap: 0.5rem;
-  cursor: pointer; padding: 0.45rem 0.7rem; border-radius: 3px; white-space: nowrap;
+  position: relative; display: flex; align-items: center; gap: 0.65rem;
+  cursor: pointer; padding: 0.62rem 0.95rem; border-radius: 4px; white-space: nowrap;
   background: color-mix(in oklch, var(--bg) 90%, transparent); backdrop-filter: blur(4px);
   box-shadow:
     inset 0 0 0 1px var(--line),
@@ -678,26 +678,26 @@ html.home-locked .footer { display: none; }
 }
 /* tier 1 — primary subsystems (Robocon · Laidlaw · Shin Group) */
 .mm-node-card--t1 {
-  padding: 0.55rem 0.85rem;
+  padding: 0.78rem 1.15rem;
   box-shadow:
     inset 0 0 0 1.5px color-mix(in oklch, var(--c, var(--accent)) 45%, var(--line)),
     0 14px 28px -20px color-mix(in oklch, var(--ink) 70%, transparent);
 }
-.mm-node-card--t1 .mm-node-label { font-size: 1.08rem; }
+.mm-node-card--t1 .mm-node-label { font-size: 1.42rem; }
 /* tier 3 — secondary (Off-duty) */
-.mm-node-card--t3 { padding: 0.35rem 0.6rem; background: color-mix(in oklch, var(--bg) 94%, transparent); }
-.mm-node-card--t3 .mm-node-label { font-size: 0.88rem; font-weight: 500; }
+.mm-node-card--t3 { padding: 0.5rem 0.82rem; background: color-mix(in oklch, var(--bg) 94%, transparent); }
+.mm-node-card--t3 .mm-node-label { font-size: 1.1rem; font-weight: 500; }
 .mm-node-dot {
-  width: 8px; height: 8px; flex: none; transform: rotate(45deg); /* survey diamond */
+  width: 11px; height: 11px; flex: none; transform: rotate(45deg); /* survey diamond */
   background: var(--c, var(--accent));
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--c, var(--accent)) 20%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in oklch, var(--c, var(--accent)) 20%, transparent);
 }
-.mm-node-text { display: flex; flex-direction: column; gap: 0.05rem; }
-.mm-node-label { font-family: var(--font-display); font-weight: 600; font-size: 0.98rem; letter-spacing: -0.01em; color: var(--ink); transition: color 0.3s; }
-.mm-node-cat { color: var(--muted); }
+.mm-node-text { display: flex; flex-direction: column; gap: 0.08rem; }
+.mm-node-label { font-family: var(--font-display); font-weight: 600; font-size: 1.24rem; letter-spacing: -0.01em; color: var(--ink); transition: color 0.3s; }
+.mm-node-cat { color: var(--muted); font-size: 0.7rem; }
 .mm-node-card:hover .mm-node-label { color: var(--accent-ink); }
 .mm-node-arrow {
-  font-family: var(--font-mono); font-size: 0.85rem; line-height: 1;
+  font-family: var(--font-mono); font-size: 1.05rem; line-height: 1;
   color: var(--c, var(--accent)); margin-left: 0.15rem;
   transition: transform 0.25s var(--ease-out-quart);
 }

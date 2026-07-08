@@ -72,6 +72,21 @@ const CARDS = SEEDS.map((seed, i) => {
   return { ...seed, x: r2(Math.cos(a) * 500), y: r2(Math.sin(a) * 272) };
 });
 
+// clean roads: straight channels from the centre to each card carry the signal
+// streams and are kept completely empty of static particles.
+const ROAD = 30; // half-width of a road in scene units
+function onRoad(x: number, y: number) {
+  for (const c of CARDS) {
+    const L2 = c.x * c.x + c.y * c.y;
+    const t = (x * c.x + y * c.y) / L2; // projection onto the centre→card line
+    if (t < 0 || t > 1) continue; // only carve between the centre and the card
+    const dx = x - t * c.x;
+    const dy = y - t * c.y;
+    if (dx * dx + dy * dy < ROAD * ROAD) return true;
+  }
+  return false;
+}
+
 // tiny deterministic PRNG so the field is identical on every visit
 function rng(seed: number) {
   let s = (seed * 9301 + 49297) % 233280;
@@ -103,7 +118,8 @@ function buildField() {
   const pts: Particle[] = [];
   const feather = (x: number, y: number) =>
     Math.min(1, (HW + 25 - Math.abs(x)) / 130) * Math.min(1, (HH + 15 - Math.abs(y)) / 90);
-  const push = (x: number, y: number, z: number, b: number, ci: number) =>
+  const push = (x: number, y: number, z: number, b: number, ci: number) => {
+    if (onRoad(x, y)) return; // roads stay empty
     pts.push({
       x, y, z,
       sx: x + (r() * 2 - 1) * 200, sy: y + (r() * 2 - 1) * 140, sz: z + (r() * 2 - 1) * 160,
@@ -114,6 +130,7 @@ function buildField() {
       band: z >= 0 ? 0 : 1,
       ef: feather(x, y),
     });
+  };
   const pick = (list: number[]) => list[Math.floor(r() * list.length)];
 
   // base fabric — runs under everything, no voids
@@ -129,13 +146,6 @@ function buildField() {
       const d = Math.hypot(x - c.x, y - c.y);
       if (d < best) { best = d; b = i; }
     });
-    // thin the unassigned field in the mid-radius corridor between the core and
-    // the cards, so the signal streams read cleanly instead of drowning in
-    // static noise. Core, card clusters, and the outer frame stay dense.
-    if (b === -1) {
-      const rC = Math.hypot(x * 0.72, y);
-      if (rC > 150 && rC < 410 && r() > 0.2) continue;
-    }
     push(x, y, z, b, b === -1 ? 0 : pick(CARDS[b].ci));
   }
 
@@ -175,18 +185,15 @@ type Stream = { bx: number; by: number; ex: number; ey: number; runners: Runner[
 
 function buildStreams(): Stream[] {
   const r = rng(77);
-  return CARDS.map((c, i) => {
-    const mx = c.x / 2;
-    const my = c.y / 2;
-    const len = Math.hypot(c.x, c.y) || 1;
-    const bow = (60 + r() * 45) * (i % 2 ? 1 : -1);
+  return CARDS.map((c) => {
+    // control point at the midpoint → a dead-straight beam down the road
     return {
-      bx: mx + (-c.y / len) * bow,
-      by: my + (c.x / len) * bow,
+      bx: c.x / 2,
+      by: c.y / 2,
       ex: c.x,
       ey: c.y,
-      runners: Array.from({ length: 13 }, () => ({
-        p: r(), sp: 0.2 + r() * 0.14, amp: 2 + r() * 6, lf: 1 + r() * 2.5, ph: r() * 6.28,
+      runners: Array.from({ length: 15 }, () => ({
+        p: r(), sp: 0.2 + r() * 0.14, amp: 1.5 + r() * 3, lf: 1 + r() * 2.5, ph: r() * 6.28,
       })),
     };
   });
@@ -541,8 +548,8 @@ export function Mindmap() {
         <div className="mm-float">
           <div className="mm-center" style={{ left: pct(HW, VW), top: pct(HH, VH) }}>
             <div className="mm-center-box">
-              <b>GK-26 · Field map</b>
-              <span className="readout">Select a subsystem</span>
+              <span className="mm-center-name">Gihyun Kim</span>
+              <span className="readout">GK-26 · Field map</span>
             </div>
           </div>
 
