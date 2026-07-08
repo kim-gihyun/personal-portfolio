@@ -47,6 +47,8 @@ export function JourneyMap() {
   const shown = active ?? places.find((p) => p.kind === "now")!;
   const routeRef = useRef<SVGPathElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const sceneRef = useRef<HTMLDivElement>(null);
+  const backRef = useRef<SVGSVGElement>(null);
   const place = (name: string) => places.find((p) => p.name === name)!;
 
   useEffect(() => {
@@ -74,22 +76,77 @@ export function JourneyMap() {
     return () => ctx.revert();
   }, []);
 
+  // depth: the sheet rests at a gentle tilt and steers toward the cursor;
+  // the land/graticule layer sits sunk behind the route and pins.
+  // Desktop-only (fine pointer, ≥1024px); reduced motion keeps the static tilt.
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    const scene = sceneRef.current;
+    const back = backRef.current;
+    if (!wrap || !scene || !back || prefersReducedMotion()) return;
+    if (!window.matchMedia("(pointer: fine)").matches) return;
+
+    let enabled = window.innerWidth >= 1024;
+    const cur = { x: 0.5, y: 0.5 };
+    const tgt = { x: 0.5, y: 0.5 };
+    let raf = 0;
+    let inside = false;
+
+    const loop = () => {
+      cur.x += (tgt.x - cur.x) * 0.16;
+      cur.y += (tgt.y - cur.y) * 0.16;
+      const px = cur.x * 2 - 1;
+      const py = cur.y * 2 - 1;
+      scene.style.transform = `rotateX(${(3 - py * 2.2).toFixed(2)}deg) rotateY(${(px * 3).toFixed(2)}deg)`;
+      back.style.transform = `translate3d(${(px * 4).toFixed(2)}px, ${(py * 3).toFixed(2)}px, -20px)`;
+      if (inside) raf = requestAnimationFrame(loop);
+    };
+    const onLeave = () => {
+      if (!inside) return;
+      inside = false;
+      cancelAnimationFrame(raf);
+      gsap.to(scene, { rotationX: 3, rotationY: 0, duration: 0.6, ease: "power2.out" });
+      gsap.to(back, { x: 0, y: 0, duration: 0.6, ease: "power2.out" });
+    };
+    const setEnabled = () => {
+      enabled = window.innerWidth >= 1024;
+      if (!enabled) onLeave();
+    };
+    window.addEventListener("resize", setEnabled);
+    const onMove = (e: MouseEvent) => {
+      if (!enabled) return;
+      const r = wrap.getBoundingClientRect();
+      tgt.x = (e.clientX - r.left) / r.width;
+      tgt.y = (e.clientY - r.top) / r.height;
+      if (!inside) {
+        inside = true;
+        gsap.killTweensOf([scene, back]);
+        raf = requestAnimationFrame(loop);
+      }
+    };
+    wrap.addEventListener("mousemove", onMove, { passive: true });
+    wrap.addEventListener("mouseleave", onLeave);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", setEnabled);
+      wrap.removeEventListener("mousemove", onMove);
+      wrap.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
   return (
     <div className="journey">
       <div className="journey-map" ref={wrapRef}>
+        {/* 3D scene: sheet tilts toward the cursor; layers sit on their own Z */}
+        <div className="map-scene" ref={sceneRef}>
         <div className="map-head readout">
           <span>Fig. 02 — Journey · 2006–present</span>
           <span>Equirectangular · NTS</span>
         </div>
 
-        <svg
-          viewBox="0 0 900 380"
-          className="journey-svg"
-          role="img"
-          aria-label="World map: lived in Seoul, London, and Istanbul; now in Hong Kong; visited Singapore, Osaka, Prague, Vienna, and Shenzhen."
-          data-cursor="view"
-          data-cursor-label="hover a pin"
-        >
+        <div className="map-frame">
+        {/* depth layer 1 — land + graticule, sunk behind the route */}
+        <svg viewBox="0 0 900 380" className="journey-svg journey-svg--back" aria-hidden ref={backRef}>
           <path className="map-land" d={WORLD_LAND} />
 
           <g className="map-grat">
@@ -100,7 +157,17 @@ export function JourneyMap() {
               <line key={`y${y}`} x1="0" y1={y} x2="900" y2={y} />
             ))}
           </g>
+        </svg>
 
+        {/* depth layer 2 — route, craft, and pins */}
+        <svg
+          viewBox="0 0 900 380"
+          className="journey-svg journey-svg--front"
+          role="img"
+          aria-label="World map: lived in Seoul, London, and Istanbul; now in Hong Kong; visited Singapore, Osaka, Prague, Vienna, and Shenzhen."
+          data-cursor="view"
+          data-cursor-label="hover a pin"
+        >
           <path ref={routeRef} className="map-route" d={ROUTE} fill="none" />
 
           <g className="map-craft" aria-hidden>
@@ -145,12 +212,14 @@ export function JourneyMap() {
             );
           })}
         </svg>
+        </div>
 
         <ul className="map-legend readout">
           <li><i className="lg-dot lg-now" /> now</li>
           <li><i className="lg-dot lg-lived" /> lived</li>
           <li><i className="lg-dot lg-visited" /> visited</li>
         </ul>
+        </div>
       </div>
 
       <div className="journey-panel">
