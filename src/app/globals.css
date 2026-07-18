@@ -607,8 +607,10 @@ html.home-locked .footer { display: none; }
    the viewport edges (capped on very wide screens), so it never reads boxed */
 .mm-stage {
   position: relative; overflow: hidden;
-  width: min(100vw, 1920px);
-  margin-left: calc(50% - min(50vw, 960px));
+  /* full-bleed on laptops, but capped on large monitors so it never balloons
+     to fill the whole screen (which looked oversized on big displays) */
+  width: min(100vw, 1360px);
+  margin-left: calc(50% - min(50vw, 680px));
   aspect-ratio: 1400 / 1040;
 }
 

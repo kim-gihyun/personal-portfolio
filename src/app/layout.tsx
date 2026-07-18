@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Spectral, Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { profile } from "@/lib/data/profile";
 import { SmoothScroll } from "@/components/providers/SmoothScroll";
@@ -8,6 +9,7 @@ import { GkBackdrop } from "@/components/chrome/GkBackdrop";
 import { Nav } from "@/components/chrome/Nav";
 import { Footer } from "@/components/chrome/Footer";
 import { Preloader } from "@/components/chrome/Preloader";
+import { Analytics } from "@/components/chrome/Analytics";
 
 const spectral = Spectral({
   subsets: ["latin"],
@@ -79,7 +81,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main id="main">{children}</main>
           <Footer />
         </SmoothScroll>
+        <Analytics />
       </body>
+      {/* GoatCounter — privacy-friendly page-view analytics */}
+      <Script
+        src="https://gc.zgo.at/count.js"
+        data-goatcounter="https://ghkim037.goatcounter.com/count"
+        strategy="afterInteractive"
+      />
     </html>
   );
 }
